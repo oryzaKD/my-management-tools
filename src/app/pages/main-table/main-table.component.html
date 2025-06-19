@@ -1,0 +1,74 @@
+<!-- Navigation Bar -->
+<div class="d-flex justify-content-start">
+    <button pButton type="button" label="New task" class="p-button-sm p-button-primary"></button>
+    <button pButton type="button" label="Search" icon="pi pi-search" class="p-button-sm p-button-text"></button>
+    <button pButton type="button" label="User" icon="pi pi-user" class="p-button-sm p-button-text"></button>
+    <button pButton type="button" label="Sort" icon="pi pi-sort-alt" class="p-button-sm p-button-text"></button>
+</div>
+
+<!-- Main Table -->
+<button
+  type="button"
+  pButton
+  pRipple
+  label="All Tasks"
+  rounded
+  plain
+  class="mr-2"
+  [icon]="showTable ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+  (click)="showTable = !showTable">
+</button>
+
+<!-- Show the table only if showTable is true -->
+<p-table *ngIf="showTable" [value]="tasks" class="main-table" [showCurrentPageReport]="false">
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="width: 2rem"><p-checkbox></p-checkbox></th>
+            <th>Task</th>
+            <th>Developer</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Estimated SP</th>
+            <th>Actual SP</th>
+            <th></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-task>
+        <tr>
+            <td><p-checkbox></p-checkbox></td>
+            <td>{{ task.name }}</td>
+            <td>
+                <p-avatar *ngIf="task.developerAvatar" [image]="task.developerAvatar" size="normal"></p-avatar>
+                <i *ngIf="!task.developerAvatar" class="pi pi-user"></i>
+            </td>
+            <td>
+                <p-tag [value]="task.status" [severity]="task.statusColor"></p-tag>
+            </td>
+            <td>
+                <p-tag [value]="task.priority" [severity]="task.priorityColor"></p-tag>
+            </td>
+            <td>
+                <p-tag [value]="task.type" [severity]="task.typeColor"></p-tag>
+            </td>
+            <td>{{ task.date }}</td>
+            <td>{{ task.estimatedSP }}</td>
+            <td>{{ task.actualSP }}</td>
+            <td></td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <tr>
+            <td colspan="7" style="text-align:right">sum</td>
+            <td>{{ getEstimatedSPSum() }} SP</td>
+            <td>{{ getActualSPSum() }} SP</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="10">
+                <button pButton type="button" label="+ Add task" class="p-button-text"></button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

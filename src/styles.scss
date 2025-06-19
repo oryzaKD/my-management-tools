@@ -1,1 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --app-bg: #232b4a;
+}
+
+body, html {
+  background: var(--app-bg) !important;
+  min-height: 100vh;
+  color: #fff;
+}
