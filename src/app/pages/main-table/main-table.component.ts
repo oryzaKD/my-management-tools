@@ -1,15 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { CheckboxModule } from 'primeng/checkbox';
-import { AvatarModule } from 'primeng/avatar';
-import { TagModule } from 'primeng/tag';
 import { PRIMENG_MODULES } from '../../shared-primeng-imports';
+import { TaskService } from '../../Services/task/task.service';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-main-table',
-  imports: [PRIMENG_MODULES],
+  imports: [PRIMENG_MODULES, HttpClientModule],
   standalone: true,
   templateUrl: './main-table.component.html',
   styleUrls: ['./main-table.component.scss']
@@ -17,67 +13,17 @@ import { PRIMENG_MODULES } from '../../shared-primeng-imports';
 export class MainTableComponent implements OnInit, OnDestroy {
   showTable = false;
 
-  tasks = [
-    {
-      name: 'New Task',
-      developerAvatar: '',
-      status: 'Waiting for review',
-      statusColor: 'info',
-      priority: 'Medium',
-      priorityColor: 'warning',
-      type: 'Feature Enhance',
-      typeColor: 'info',
-      date: '',
-      estimatedSP: 0,
-      actualSP: 0
-    },
-    {
-      name: 'New task',
-      developerAvatar: '',
-      status: 'In Progress',
-      statusColor: 'warning',
-      priority: 'Best Effort',
-      priorityColor: 'success',
-      type: 'Feature Enhance',
-      typeColor: 'info',
-      date: '',
-      estimatedSP: 0,
-      actualSP: 0
-    },
-    {
-      name: 'New Task',
-      developerAvatar: '',
-      status: '',
-      statusColor: '',
-      priority: '',
-      priorityColor: '',
-      type: '',
-      typeColor: '',
-      date: '',
-      estimatedSP: 0,
-      actualSP: 0
-    },
-    {
-      name: 'Committed Feature',
-      developerAvatar: '',
-      status: 'Ready to start',
-      statusColor: 'success',
-      priority: 'High',
-      priorityColor: 'danger',
-      type: 'Other',
-      typeColor: 'secondary',
-      date: '',
-      estimatedSP: 2,
-      actualSP: 1.5
-    }
-  ];
+  tasks: any[] = [];
 
-  constructor() {
+  constructor(
+    // private _taskService: TaskService,
+    private http: HttpClient
+  ) {
     console.log('MainTableComponent constructor');
   }
 
   ngOnInit(): void {
-    console.log('MainTableComponent ngOnInit');
+    this.getTaskList();
   }
 
   ngOnDestroy(): void {
@@ -90,5 +36,18 @@ export class MainTableComponent implements OnInit, OnDestroy {
 
   getActualSPSum() {
     return this.tasks.reduce((sum, task) => sum + (task.actualSP || 0), 0);
+  }
+
+  getTaskList() {
+    // this._taskService.getTaskList().subscribe(
+    //   (res: any) => {
+    //     this.tasks = res.data;
+    //   }
+    // )
+    this.http.get<any>('https://mocki.io/v1/61c56458-2b07-44e2-9ec9-c7df98ccbe9f')
+      .subscribe((res: any) => {
+        console.log(res); 
+        this.tasks = res.data;
+      });
   }
 }

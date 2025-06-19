@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientModule } from '@angular/common/http';
 
 import { MainTableComponent } from './main-table.component';
 
@@ -8,7 +9,7 @@ describe('MainTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MainTableComponent]
+      imports: [MainTableComponent, HttpClientModule]
     })
     .compileComponents();
 
