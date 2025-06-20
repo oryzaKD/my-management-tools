@@ -9,6 +9,11 @@ import { MainTableComponent } from './pages/main-table/main-table.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { TooltipModule } from 'primeng/tooltip';
 
 export const PRIMENG_MODULES = [
     TableModule,
@@ -23,5 +28,10 @@ export const PRIMENG_MODULES = [
     CommonModule,
     HttpClientModule,
     DropdownModule,
-    CalendarModule
-];
+    CalendarModule,
+    IconFieldModule,
+    InputTextModule,
+    InputIconModule,
+    MultiSelectModule,
+    TooltipModule
+];  

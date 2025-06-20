@@ -1,13 +1,23 @@
 <!-- Navigation Bar -->
 <div class="d-flex justify-content-start mt-4 mb-4">
-    <button pButton type="button" label="New task" class="p-button-sm p-button-primary"></button>
+    <button pButton type="button" label="New task" class="p-button-sm p-button-primary"
+        (click)="onAddTaskRow()"></button>
     <button pButton type="button" icon="pi pi-chevron-down" class="p-button-sm p-button-primary"></button>
-    <button pButton type="button" label="Search" icon="pi pi-search"
-        class="p-button-sm p-button-text custom-white-button"></button>
-    <button pButton type="button" label="User" icon="pi pi-user"
-        class="p-button-sm p-button-text custom-white-button"></button>
-    <button pButton type="button" label="Sort" icon="pi pi-sort-alt"
-        class="p-button-sm p-button-text custom-white-button"></button>
+    <div class="flex ms-4 me-4">
+        <button pButton type="button" icon="pi pi-search" class="p-button-md p-button-primary"
+            style="background-color: transparent; border: none; color: white;"></button>
+        <input pInputText type="text" class="search-input" (input)="onGlobalFilter($event, dt1)"
+            placeholder="Search by task title" />
+    </div>
+    <!-- <button pButton type="button" label="User" icon="pi pi-user"
+        class="p-button-sm p-button-text custom-white-button"></button> -->
+    <button pButton type="button" icon="pi pi-user" class="p-button-md p-button-primary"
+        style="background-color: transparent; border: none; color: white;"></button>
+    <p-dropdown class="search-input" [options]="developerName" optionValue="name" optionLabel="name"
+        [style]="{ width: '250px', backgroundColor: 'transparent', border: 'none' }" placeholder="Select a Developer"
+        appendTo="body" [(ngModel)]="selectedDeveloper" [showClear]="true" (onChange)="onDeveloperFilterChange()" />
+    <!-- <button pButton type="button" label="Sort" icon="pi pi-sort-alt"
+        class="p-button-sm p-button-text custom-white-button"></button> -->
 </div>
 
 <!-- Main Table -->
@@ -15,94 +25,233 @@
     [icon]="showTable ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" (click)="showTable = !showTable" />
 
 <!-- Show the table only if showTable is true -->
-<p-table *ngIf="showTable" [value]="tasks" [resizableColumns]="true" [scrollable]="true" scrollHeight="600px" styleClass="p-datatable-gridlines"
-    [tableStyle]="{'min-width': '50rem'}">
+<p-table #dt1 *ngIf="showTable" [value]="filteredTasks" [resizableColumns]="true" styleClass="p-datatable-gridlines"
+    [globalFilterFields]="['title']" [showCurrentPageReport]="true" sortMode="multiple" dataKey="title" editMode="row"
+    [tableStyle]="{'min-width': '150rem'}" [paginator]="true" [rows]="5">
     <ng-template pTemplate="header">
         <tr>
-            <th style="width: 2rem; text-align: center;"><p-checkbox></p-checkbox></th>
-            <th colspan="2" style="text-align: center;">Task</th>
-            <th style="text-align: center;">Developer</th>
-            <th style="text-align: center;">Status</th>
-            <th style="text-align: center;">Priority</th>
-            <th style="text-align: center;">Type</th>
-            <th style="text-align: center;">Date</th>
-            <th style="text-align: center;">Estimated SP <i class="pi pi-exclamation-circle"></i></th>
-            <th style="text-align: center;">Actual SP <i class="pi pi-exclamation-circle"></i></th>
+            <th style="text-align: center;"><p-checkbox></p-checkbox></th>
+            <th colspan="2" style="text-align: center; width: 50rem;" pSortableColumn="title">
+                Task <p-sortIcon field="title"></p-sortIcon>
+            </th>
+            <th style="text-align: center; width: 30rem;" pSortableColumn="developerAvatar">
+                Developer
+            </th>
+            <th style="text-align: center;" pSortableColumn="status">
+                Status <p-sortIcon field="status"></p-sortIcon>
+            </th>
+            <th style="text-align: center;" pSortableColumn="priority">
+                Priority <p-sortIcon field="priority"></p-sortIcon>
+            </th>
+            <th style="text-align: center; width: 30rem;" pSortableColumn="type">
+                Type <p-sortIcon field="type"></p-sortIcon>
+            </th>
+            <th style="text-align: center; width: 30rem;" pSortableColumn="date">
+                Date <p-sortIcon field="date"></p-sortIcon>
+            </th>
+            <th style="text-align: center; width: 30rem;" pSortableColumn="estimatedSP">
+                Estimated SP <i class="pi pi-exclamation-circle"></i> <p-sortIcon field="estimatedSP"></p-sortIcon>
+            </th>
+            <th style="text-align: center; width: 30rem;" pSortableColumn="actualSP">
+                Actual SP <i class="pi pi-exclamation-circle"></i> <p-sortIcon field="actualSP"></p-sortIcon>
+            </th>
             <th style="width: 30rem;"><i class="pi pi-plus"></i></th>
         </tr>
         <tr *ngIf="newTaskRow">
-            <td><p-checkbox></p-checkbox></td>
-            <td><input [(ngModel)]="newTaskRow.title" placeholder="Title" class="form-control" /></td>
+            <td style="text-align: center;"><p-checkbox></p-checkbox></td>
+            <td style="text-align: center;"><input [(ngModel)]="newTaskRow.title" placeholder="Title" style="width: 200px; display: block; margin: 0 auto;"
+                    class="form-control" /></td>
             <td style="text-align: center;"><i class="pi pi-plus-circle"></i></td>
             <td style="text-align: center;">
-                <input [(ngModel)]="newTaskRow.developerAvatar" placeholder="Avatar" class="form-control" />
-            </td>
-            <td>
-                <p-dropdown [options]="statusTask" optionValue="name" [(ngModel)]="newTaskRow.status"
-                    optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Status" appendTo="body" />
-            </td>
-            <td>
-                <p-dropdown [options]="priorityTask" optionValue="name" [(ngModel)]="newTaskRow.priority"
-                    optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Priority"
-                    appendTo="body" />
-            </td>
-            <td>
-                <p-dropdown [options]="typeTask" optionValue="name" [(ngModel)]="newTaskRow.type"
-                    optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Type" appendTo="body" />
+                <p-multiSelect [options]="developerName" [(ngModel)]="newTaskRow.developer" [filter]="true"
+                    optionLabel="name" placeholder="Select Developer(s)" appendTo="body"
+                    [style]="{ width: '200px', backgroundColor: 'white', border: 'none', color: 'black' }" />
             </td>
             <td style="text-align: center;">
-                <p-calendar [(ngModel)]="newTaskRow.date" [iconDisplay]="'input'" [showIcon]="true"
+                <p-dropdown [options]="statusTask" optionValue="name" [(ngModel)]="newTaskRow.status" optionLabel="name"
+                    [style]="{ width: '200px' }" placeholder="Select a Status" appendTo="body" />
+            </td>
+            <td style="text-align: center;">
+                <p-dropdown [options]="priorityTask" optionValue="name" [(ngModel)]="newTaskRow.priority"
+                    optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Priority" appendTo="body" />
+            </td>
+            <td style="text-align: center;">
+                <p-dropdown [options]="typeTask" optionValue="name" [(ngModel)]="newTaskRow.type" optionLabel="name"
+                    [style]="{ width: '200px' }" placeholder="Select a Type" appendTo="body" />
+            </td>
+            <td style="text-align: center;">
+                <p-calendar [(ngModel)]="newTaskRow.date" [iconDisplay]="'input'" [showIcon]="true" placeholder="Select a Date"
                     inputId="icondisplay" [style]="{ width: '200px' }" appendTo="body" />
             </td>
-            <td style="text-align: center;"><input [(ngModel)]="newTaskRow.estimatedSP" type="number"
-                    placeholder="Est. SP" class="form-control" /></td>
-            <td style="text-align: center;"><input [(ngModel)]="newTaskRow.actualSP" type="number"
-                    placeholder="Act. SP" class="form-control" /></td>
             <td>
-                <button pButton type="button" icon="pi pi-check" class="p-button-success p-button-sm"
+                <input [(ngModel)]="newTaskRow.estimatedSP" type="number"
+                    placeholder="Est. SP" class="form-control" style="width: 100px; display: block; margin: 0 auto;" /></td>
+            <td>
+                <input [(ngModel)]="newTaskRow.actualSP" type="number" placeholder="Act. SP"
+                    class="form-control" style="width: 100px; display: block; margin: 0 auto;" />
+            </td>
+            <td style="text-align: center;">
+                <button pButton type="button" icon="pi pi-check" class="p-button-success p-button-sm me-4"
                     (click)="onSaveNewTask()"></button>
                 <button pButton type="button" icon="pi pi-times" class="p-button-danger p-button-sm"
                     (click)="onCancelNewTask()"></button>
             </td>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-task>
-        <tr>
+    <ng-template pTemplate="body" let-task let-editing="editing" let-ri="rowIndex">
+        <tr [pEditableRow]="task">
             <td><p-checkbox></p-checkbox></td>
-            <td>{{ task.title }}</td>
-            <td style="text-align: center;"><i class="pi pi-plus-circle"></i></td>
-            <td style="text-align: center;">
-                <p-avatar *ngIf="task.developerAvatar" [image]="task.developerAvatar" size="normal"></p-avatar>
-                <i *ngIf="!task.developerAvatar" class="pi pi-user"></i>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" [(ngModel)]="task.title" />
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{ task.title }}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td>
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <i class="pi pi-plus-circle"></i>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <i class="pi pi-plus-circle"></i>
+                    </ng-template>
+                </p-cellEditor>
             </td>
             <td style="text-align: center;">
-                <p-tag [value]="task.status" [styleClass]="getSeverityStatus(task.status)" />
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-multiSelect [options]="developerName" [(ngModel)]="task.developer" [filter]="true"
+                            optionLabel="name" placeholder="Select Developer(s)" appendTo="body"
+                            [style]="{ width: '250px', backgroundColor: 'transparent', border: 'none' }" />
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <i *ngIf="task.developer.length === 1" class="pi pi-user" [pTooltip]="task.developer"
+                            tooltipPosition="right" style="cursor: pointer;"></i>
+                        <i *ngIf="task.developer.length > 1" class="pi pi-users" [pTooltip]="task.developer.join(', ')"
+                            tooltipPosition="right" style="cursor: pointer;"></i>
+                    </ng-template>
+                </p-cellEditor>
             </td>
             <td style="text-align: center;">
-                <p-tag [value]="task.priority" [severity]="getSeverityPriority(task.priority)" />
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-dropdown [options]="statusTask" optionValue="name" [(ngModel)]="task.status"
+                            optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Status"
+                            appendTo="body" />
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <p-tag [value]="task.status" [styleClass]="getSeverityStatus(task.status)" />
+                    </ng-template>
+                </p-cellEditor>
             </td>
             <td style="text-align: center;">
-                <p-tag [value]="task.type" [severity]="getSeverityType(task.type)" />
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-dropdown [options]="priorityTask" optionValue="name" [(ngModel)]="task.priority"
+                            optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Priority"
+                            appendTo="body" />
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <p-tag [value]="task.priority" [styleClass]="getSeverityPriority(task.priority)" />
+                    </ng-template>
+                </p-cellEditor>
             </td>
-            <td style="text-align: center;">{{ task.date | date : "d MMMM, yyyy" }}</td>
-            <td style="text-align: center;">{{ task.estimatedSP }} SP</td>
-            <td style="text-align: center;">{{ task.actualSP }} SP</td>
-            <td style="text-align: center;"></td>
+            <td style="text-align: center;">
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-dropdown [options]="typeTask" optionValue="name" [(ngModel)]="task.type" optionLabel="name"
+                            [style]="{ width: '200px' }" placeholder="Select a Type" appendTo="body" />
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <p-tag [value]="task.type" [styleClass]="getSeverityType(task.type)" />
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td style="text-align: center;">
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <p-calendar [(ngModel)]="task.date" [iconDisplay]="'input'" [showIcon]="true"
+                            inputId="icondisplay" [style]="{ width: '200px' }" appendTo="body" />
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{ task.date | date : "d MMMM, yyyy" }}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td style="text-align: center;">
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="number" [(ngModel)]="task.estimatedSP" placeholder="Est. SP" />
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{ task.estimatedSP }} SP
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td style="text-align: center;">
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <input pInputText type="number" [(ngModel)]="task.actualSP" placeholder="Act. SP" />
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{ task.actualSP }} SP
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td style="text-align: center;">
+                <div class="flex items-center justify-center gap-2">
+                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
+                        (click)="onRowEditInit(task, ri)" text rounded severity="secondary"
+                        style="background-color: gray; border: none; color: white;"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                        (click)="onRowEditSave(task, ri)" class="p-button-success me-4"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                        (click)="onRowEditCancel(task, ri)" class="p-button-danger"></button>
+                </div>
+            </td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
-        <tr>
-            <td><p-checkbox></p-checkbox></td>
-            <td colspan="11">
-                <button pButton type="button" label="+ Add task" class="p-button-text custom-white-button"
-                    (click)="onAddTaskRow()"></button>
-            </td>
-        </tr>
         <tr>
             <td colspan="8" style="text-align:right"></td>
             <td style="text-align: center;">{{ getEstimatedSPSum() }} SP</td>
             <td style="text-align: center;">{{ getActualSPSum() }} SP</td>
             <td></td>
+        </tr>
+        <tr>
+            <td colspan="4"></td>
+            <td style="padding: 0.2rem 0.5rem; text-align: center;">
+                <div class="legend-bar" style="display: flex; justify-content: center;">
+                    <ng-container *ngFor="let s of getStatusPercentages()">
+                        <div class="legend" [ngClass]="s.color" [title]="s.name">
+                            <span style="font-size: 0.8em; color: #222;">{{ s.percent }}%</span>
+                        </div>
+                    </ng-container>
+                </div>
+            </td>
+            <td style="padding: 0.5rem 0; text-align: center;">
+                <div class="legend-bar" style="display: flex; justify-content: center;">
+                    <ng-container *ngFor="let p of getPriorityPercentages()">
+                        <div class="legend" [ngClass]="p.color" [title]="p.name">
+                            <span style="font-size: 0.8em; color: #222;">{{ p.percent }}%</span>
+                        </div>
+                    </ng-container>
+                </div>
+            </td>
+            <td style="padding: 0.5rem 0; text-align: center;">
+                <div class="legend-bar" style="display: flex; justify-content: center;">
+                    <ng-container *ngFor="let t of getTypePercentages()">
+                        <div class="legend" [ngClass]="t.color" [title]="t.name">
+                            <span style="font-size: 0.8em; color: #222;">{{ t.percent }}%</span>
+                        </div>
+                    </ng-container>
+                </div>
+            </td>
+            <td colspan="4"></td>
         </tr>
     </ng-template>
 </p-table>
