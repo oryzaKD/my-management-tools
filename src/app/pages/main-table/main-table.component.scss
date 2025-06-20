@@ -123,16 +123,21 @@
 }
 
 input::placeholder {
-    color: gray;
+    color: white;
 }
 
-::ng-deep .p-dropdown::placeholder {
-    color: gray !important;
+// Dropdown styles for white text - only for specific dropdown
+::ng-deep .white-text-dropdown .p-dropdown-label {
+    color: white !important;
 }
 
-// ::ng-deep .p-dropdown .p-dropdown-label {
-//     color: black !important;
-// }
+::ng-deep .white-text-dropdown .p-dropdown-label.p-placeholder {
+    color: white !important;
+}
+
+::ng-deep .white-text-dropdown.p-inputwrapper-filled .p-dropdown-label {
+    color: white !important;
+}
 
 ::ng-deep .p-datatable {
     background-color: #2D324B !important;

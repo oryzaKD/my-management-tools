@@ -1,1 +1,145 @@
-<p>kanban works!</p>
+<!-- Navigation Bar -->
+<div class="d-flex justify-content-start mt-4 mb-4">
+    <div class="flex ms-4 me-4">
+        <button pButton type="button" label="New task" class="p-button-sm p-button-primary"
+            (click)="showDialog()"></button>
+        <button pButton type="button" icon="pi pi-chevron-down" class="p-button-sm p-button-primary"></button>
+    </div>
+    <!-- Search -->
+    <div class="flex ms-4 me-4">
+        <button pButton type="button" icon="pi pi-search" class="p-button-md p-button-primary"
+            style="background-color: transparent; border: none; color: white;"></button>
+        <input pInputText type="text" class="search-input" (input)="onSearchFilter($event)"
+            placeholder="Search by task title" [(ngModel)]="searchTerm" />
+        <button *ngIf="searchTerm" pButton type="button" icon="pi pi-times" class="p-button-md p-button-primary"
+            style="background-color: transparent; border: none; color: white; margin-left: 5px;" (click)="clearSearch()"
+            pTooltip="Clear search"></button>
+    </div>
+
+    <!-- Developer -->
+    <div class="flex ms-4 me-4">
+        <button pButton type="button" icon="pi pi-user" class="p-button-md p-button-primary"
+            style="background-color: transparent; border: none; color: white;"></button>
+        <p-dropdown class="search-input" [options]="developerName" optionValue="name" optionLabel="name"
+            [style]="{ width: '250px', backgroundColor: 'transparent', border: 'none' }"
+            placeholder="Select a Developer" appendTo="body" [(ngModel)]="selectedDeveloper" [showClear]="true"
+            (onChange)="onDeveloperFilterChange()" />
+    </div>
+
+    <!-- Sort -->
+    <div class="flex ms-4 me-4">
+        <button pButton type="button" [icon]="getSortIcon()" class="p-button-md p-button-primary"
+            style="background-color: transparent; border: none; color: white;" 
+            (click)="toggleSort()" pTooltip="Toggle sort order"></button>
+        <button pButton type="button" [label]="getSortLabel()" class="p-button-md p-button-primary"
+            style="background-color: transparent; border: none;" 
+            [ngStyle]="{'color': sortOrder !== 'none' ? 'white' : '#6B7280'}"
+            (click)="toggleSort()"></button>
+    </div>
+
+    <!-- Percentage -->
+    <div class="flex ms-4 me-4">
+        <div class="legend-bar" style="display: flex; justify-content: center;">
+            <ng-container *ngFor="let s of getStatusPercentages()">
+                <div class="legend" [ngClass]="s.color" [title]="s.name">
+                    <span style="font-size: 0.8em; color: #222;">{{ s.percent }}%</span>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>
+
+    <div class="kanban-board">
+        <div class="kanban-column" *ngFor="let status of filteredTasks" pDroppable="tasks"
+            (onDrop)="onTaskDrop($event, status.title)">
+            <div class="kanban-column-header" [ngStyle]="{'background': getStatusBackgroundColor(status.title)}">
+                {{ status.title }} <span>({{ status.task.length }})</span>
+            </div>
+            <div class="kanban-tasks">
+                <div class="kanban-task" *ngFor="let task of status.task; let i = index" pDraggable="tasks"
+                    (onDragStart)="onTaskDragStart($event, task, status.title, i)" (onDragEnd)="onTaskDragEnd($event)">
+                    <div class="task-title">{{ task.title }}</div>
+                    <div class="task-tags">
+                        <span class="tag">{{ task.tags.type }}</span>
+                        <span class="tag">{{ task.tags.priority }}</span>
+                        <span class="tag">{{ task.tags.estimatedSP }} SP</span>
+                    </div>
+                    <div class="task-footer">
+                        <i *ngIf="task.developer.length === 1" class="pi pi-user"
+                            [pTooltip]="getDeveloperTooltip(task.developer)" tooltipPosition="right"
+                            style="cursor: pointer;"></i>
+                        <i *ngIf="task.developer.length > 1" class="pi pi-users"
+                            [pTooltip]="getDeveloperTooltip(task.developer)" tooltipPosition="right"
+                            style="cursor: pointer;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p-dialog header="Add Task" [modal]="true" [(visible)]="addTaskDialog" [style]="{ width: '600px' }"
+        [baseZIndex]="10000" [draggable]="false" [resizable]="false" (onHide)="handleCloseDialog()">
+        <!-- Task Title -->
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="taskTitle" class="font-semibold" style="width: 120px">Task Title</label>
+            <input id="taskTitle" [(ngModel)]="newTaskRow.title" placeholder="Title" class="form-control"
+                [style]="{ width: '100%' }" />
+        </div>
+
+        <!-- Developer -->
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="developer" class="font-semibold" style="width: 120px">Developer</label>
+            <p-multiSelect id="developer" [options]="developerName" [(ngModel)]="newTaskRow.developer" [filter]="true"
+                optionLabel="name" placeholder="Select Developer(s)" appendTo="body" [style]="{ width: '100%' }" />
+        </div>
+
+        <!-- Status -->
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="status" class="font-semibold" style="width: 120px">Status</label>
+            <p-dropdown id="status" [options]="statusTask" optionValue="name" [(ngModel)]="newTaskRow.status"
+                optionLabel="name" placeholder="Select a Status" appendTo="body" [style]="{ width: '100%' }" />
+        </div>
+
+        <!-- Priority -->
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="priority" class="font-semibold" style="width: 120px">Priority</label>
+            <p-dropdown id="priority" [options]="priorityTask" optionValue="name" [(ngModel)]="newTaskRow.priority"
+                optionLabel="name" placeholder="Select a Priority" appendTo="body" [style]="{ width: '100%' }" />
+        </div>
+
+        <!-- Type -->
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="type" class="font-semibold" style="width: 120px">Type</label>
+            <p-dropdown id="type" [options]="typeTask" optionValue="name" [(ngModel)]="newTaskRow.type"
+                optionLabel="name" placeholder="Select a Type" appendTo="body" [style]="{ width: '100%' }" />
+        </div>
+
+        <!-- Date -->
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="date" class="font-semibold" style="width: 120px">Date</label>
+            <p-calendar id="date" [(ngModel)]="newTaskRow.date" [iconDisplay]="'input'" [showIcon]="true"
+                placeholder="Select a Date" appendTo="body" [style]="{ width: '100%' }" />
+        </div>
+
+        <!-- Estimated SP -->
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="estimatedSP" class="font-semibold" style="width: 120px">Estimated SP</label>
+            <input id="estimatedSP" [(ngModel)]="newTaskRow.estimatedSP" type="number" placeholder="0"
+                class="form-control" [style]="{ width: '100px' }" />
+        </div>
+
+        <!-- Actual SP -->
+        <div class="flex align-items-center gap-3 mb-4">
+            <label for="actualSP" class="font-semibold" style="width: 120px">Actual SP</label>
+            <input id="actualSP" [(ngModel)]="newTaskRow.actualSP" type="number" placeholder="0" class="form-control"
+                [style]="{ width: '100px' }" />
+        </div>
+
+        <!-- Footer -->
+        <ng-template pTemplate="footer">
+            <button pButton type="button" icon="pi pi-times" label="Cancel" class="p-button-danger p-button-sm me-2"
+                (click)="onCancelNewTask()"></button>
+            <button pButton type="button" icon="pi pi-check" label="Save" class="p-button-success p-button-sm"
+                (click)="onSaveNewTask()"></button>
+        </ng-template>
+    </p-dialog>

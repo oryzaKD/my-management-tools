@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PRIMENG_MODULES } from '../../shared-primeng-imports';
 import { TaskService } from '../../Services/task/task.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -23,11 +23,10 @@ export interface Task {
 @Component({
   selector: 'app-main-table',
   imports: [PRIMENG_MODULES, HttpClientModule, FormsModule],
-  standalone: true,
   templateUrl: './main-table.component.html',
   styleUrls: ['./main-table.component.scss']
 })
-export class MainTableComponent implements OnInit, OnDestroy {
+export class MainTableComponent implements OnInit {
   @ViewChild('dt1') dt1!: Table;
   showTable = true;
 
@@ -67,18 +66,13 @@ export class MainTableComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    private _taskService: TaskService,
-    private http: HttpClient
+    private _taskService: TaskService
   ) {
     console.log('MainTableComponent constructor');
   }
 
   ngOnInit(): void {
     this.getTaskList();
-  }
-
-  ngOnDestroy(): void {
-    console.log('MainTableComponent ngOnDestroy');
   }
 
   getEstimatedSPSum() {

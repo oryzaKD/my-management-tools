@@ -14,6 +14,9 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
+import { FormsModule } from '@angular/forms';
+import { DragDropModule } from 'primeng/dragdrop';
 
 export const PRIMENG_MODULES = [
     TableModule,
@@ -33,5 +36,8 @@ export const PRIMENG_MODULES = [
     InputTextModule,
     InputIconModule,
     MultiSelectModule,
-    TooltipModule
+    TooltipModule,
+    DialogModule,
+    FormsModule,
+    DragDropModule
 ];  

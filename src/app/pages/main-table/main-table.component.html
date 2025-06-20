@@ -9,13 +9,12 @@
         <input pInputText type="text" class="search-input" (input)="onGlobalFilter($event, dt1)"
             placeholder="Search by task title" />
     </div>
-    <!-- <button pButton type="button" label="User" icon="pi pi-user"
-        class="p-button-sm p-button-text custom-white-button"></button> -->
     <button pButton type="button" icon="pi pi-user" class="p-button-md p-button-primary"
         style="background-color: transparent; border: none; color: white;"></button>
-    <p-dropdown class="search-input" [options]="developerName" optionValue="name" optionLabel="name"
-        [style]="{ width: '250px', backgroundColor: 'transparent', border: 'none' }" placeholder="Select a Developer"
-        appendTo="body" [(ngModel)]="selectedDeveloper" [showClear]="true" (onChange)="onDeveloperFilterChange()" />
+    <p-dropdown [options]="developerName" optionValue="name" optionLabel="name"
+        [style]="{ width: '250px', backgroundColor: 'transparent', border: 'none', color: 'white !important' }" placeholder="Select a Developer"
+        appendTo="body" [(ngModel)]="selectedDeveloper" [showClear]="true" (onChange)="onDeveloperFilterChange()" 
+        styleClass="white-text-dropdown" />
     <!-- <button pButton type="button" label="Sort" icon="pi pi-sort-alt"
         class="p-button-sm p-button-text custom-white-button"></button> -->
 </div>

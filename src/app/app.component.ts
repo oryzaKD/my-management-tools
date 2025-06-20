@@ -10,7 +10,6 @@ import { HttpClientModule } from '@angular/common/http';
     RouterOutlet,
     HttpClientModule
   ],
-  standalone: true,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

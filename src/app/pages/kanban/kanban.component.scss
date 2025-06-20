@@ -1,0 +1,152 @@
+.search-input {
+    width: 200px;
+    background: transparent !important;
+    box-shadow: none;
+    border: none;
+    color: white;
+}
+
+.kanban-board {
+  display: flex;
+  gap: 16px;
+  background: #181c2f;
+  padding: 24px;
+  min-height: 80vh;
+}
+
+.kanban-column {
+  background: #23284a;
+  border-radius: 12px;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+}
+
+.kanban-column-header {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 16px;
+  border-radius: 12px 12px 0 0;
+}
+
+.kanban-tasks {
+  padding: 8px;
+  flex: 1;
+}
+
+.kanban-task {
+  background: #23284a;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  padding: 16px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.task-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.task-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tag {
+  background: #313866;
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.9em;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.task-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Drag and Drop Styles
+.kanban-task {
+  cursor: grab;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.kanban-task.p-draggable-dragging {
+  opacity: 0.7;
+  transform: rotate(5deg);
+  z-index: 1000;
+}
+
+.kanban-column.p-droppable-hover {
+  background: #2a3153;
+  transition: background-color 0.2s ease;
+}
+
+.kanban-column {
+  transition: background-color 0.2s ease;
+  
+  &.p-droppable-active {
+    background: #2a3153;
+    border: 2px dashed #3b82f6;
+  }
+}
+
+// Status color classes for the legend
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  min-width: 50px;
+  border-radius: 4px;
+  margin: 0 2px;
+  font-weight: bold;
+}
+
+.status-ready {
+  background-color: #47d582; /* Green */
+}
+
+.status-in-progress {
+  background-color: #f1c40f; /* Yellow */
+}
+
+.status-waiting-for-review {
+  background-color: #3ddde3; /* Light Blue */
+}
+
+.status-pending-deploy {
+  background-color: #2768ae; /* Blue */
+}
+
+.status-done {
+  background-color: #27ae60; /* Dark Green */
+}
+
+.status-stuck {
+  background-color: #e74c3c; /* Red */
+}
+
+.status-default {
+  background-color: #8d979d; /* Gray */
+}
