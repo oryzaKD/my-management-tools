@@ -7,6 +7,8 @@ import { RouterOutlet, RouterModule, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MainTableComponent } from './pages/main-table/main-table.component';
 import { HttpClientModule } from '@angular/common/http';
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
 
 export const PRIMENG_MODULES = [
     TableModule,
@@ -19,5 +21,7 @@ export const PRIMENG_MODULES = [
     MainTableComponent,
     RouterLink,
     CommonModule,
-    HttpClientModule
+    HttpClientModule,
+    DropdownModule,
+    CalendarModule
 ];

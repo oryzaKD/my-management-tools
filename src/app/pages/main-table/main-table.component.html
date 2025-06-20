@@ -1,74 +1,108 @@
 <!-- Navigation Bar -->
-<div class="d-flex justify-content-start">
+<div class="d-flex justify-content-start mt-4 mb-4">
     <button pButton type="button" label="New task" class="p-button-sm p-button-primary"></button>
-    <button pButton type="button" label="Search" icon="pi pi-search" class="p-button-sm p-button-text"></button>
-    <button pButton type="button" label="User" icon="pi pi-user" class="p-button-sm p-button-text"></button>
-    <button pButton type="button" label="Sort" icon="pi pi-sort-alt" class="p-button-sm p-button-text"></button>
+    <button pButton type="button" icon="pi pi-chevron-down" class="p-button-sm p-button-primary"></button>
+    <button pButton type="button" label="Search" icon="pi pi-search"
+        class="p-button-sm p-button-text custom-white-button"></button>
+    <button pButton type="button" label="User" icon="pi pi-user"
+        class="p-button-sm p-button-text custom-white-button"></button>
+    <button pButton type="button" label="Sort" icon="pi pi-sort-alt"
+        class="p-button-sm p-button-text custom-white-button"></button>
 </div>
 
 <!-- Main Table -->
-<button
-  type="button"
-  pButton
-  pRipple
-  label="All Tasks"
-  rounded
-  plain
-  class="mr-2"
-  [icon]="showTable ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-  (click)="showTable = !showTable">
-</button>
+<p-button label="All Tasks" [text]="true" class="mr-2 mb-4 custom-purple-button"
+    [icon]="showTable ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" (click)="showTable = !showTable" />
 
 <!-- Show the table only if showTable is true -->
-<p-table *ngIf="showTable" [value]="tasks" class="main-table" [showCurrentPageReport]="false">
+<p-table *ngIf="showTable" [value]="tasks" [resizableColumns]="true" [scrollable]="true" scrollHeight="600px" styleClass="p-datatable-gridlines"
+    [tableStyle]="{'min-width': '50rem'}">
     <ng-template pTemplate="header">
         <tr>
-            <th style="width: 2rem"><p-checkbox></p-checkbox></th>
-            <th>Task</th>
-            <th>Developer</th>
-            <th>Status</th>
-            <th>Priority</th>
-            <th>Type</th>
-            <th>Date</th>
-            <th>Estimated SP</th>
-            <th>Actual SP</th>
-            <th></th>
+            <th style="width: 2rem; text-align: center;"><p-checkbox></p-checkbox></th>
+            <th colspan="2" style="text-align: center;">Task</th>
+            <th style="text-align: center;">Developer</th>
+            <th style="text-align: center;">Status</th>
+            <th style="text-align: center;">Priority</th>
+            <th style="text-align: center;">Type</th>
+            <th style="text-align: center;">Date</th>
+            <th style="text-align: center;">Estimated SP <i class="pi pi-exclamation-circle"></i></th>
+            <th style="text-align: center;">Actual SP <i class="pi pi-exclamation-circle"></i></th>
+            <th style="width: 30rem;"><i class="pi pi-plus"></i></th>
+        </tr>
+        <tr *ngIf="newTaskRow">
+            <td><p-checkbox></p-checkbox></td>
+            <td><input [(ngModel)]="newTaskRow.title" placeholder="Title" class="form-control" /></td>
+            <td style="text-align: center;"><i class="pi pi-plus-circle"></i></td>
+            <td style="text-align: center;">
+                <input [(ngModel)]="newTaskRow.developerAvatar" placeholder="Avatar" class="form-control" />
+            </td>
+            <td>
+                <p-dropdown [options]="statusTask" optionValue="name" [(ngModel)]="newTaskRow.status"
+                    optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Status" appendTo="body" />
+            </td>
+            <td>
+                <p-dropdown [options]="priorityTask" optionValue="name" [(ngModel)]="newTaskRow.priority"
+                    optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Priority"
+                    appendTo="body" />
+            </td>
+            <td>
+                <p-dropdown [options]="typeTask" optionValue="name" [(ngModel)]="newTaskRow.type"
+                    optionLabel="name" [style]="{ width: '200px' }" placeholder="Select a Type" appendTo="body" />
+            </td>
+            <td style="text-align: center;">
+                <p-calendar [(ngModel)]="newTaskRow.date" [iconDisplay]="'input'" [showIcon]="true"
+                    inputId="icondisplay" [style]="{ width: '200px' }" appendTo="body" />
+            </td>
+            <td style="text-align: center;"><input [(ngModel)]="newTaskRow.estimatedSP" type="number"
+                    placeholder="Est. SP" class="form-control" /></td>
+            <td style="text-align: center;"><input [(ngModel)]="newTaskRow.actualSP" type="number"
+                    placeholder="Act. SP" class="form-control" /></td>
+            <td>
+                <button pButton type="button" icon="pi pi-check" class="p-button-success p-button-sm"
+                    (click)="onSaveNewTask()"></button>
+                <button pButton type="button" icon="pi pi-times" class="p-button-danger p-button-sm"
+                    (click)="onCancelNewTask()"></button>
+            </td>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-task>
         <tr>
             <td><p-checkbox></p-checkbox></td>
-            <td>{{ task.name }}</td>
-            <td>
+            <td>{{ task.title }}</td>
+            <td style="text-align: center;"><i class="pi pi-plus-circle"></i></td>
+            <td style="text-align: center;">
                 <p-avatar *ngIf="task.developerAvatar" [image]="task.developerAvatar" size="normal"></p-avatar>
                 <i *ngIf="!task.developerAvatar" class="pi pi-user"></i>
             </td>
-            <td>
-                <p-tag [value]="task.status" [severity]="task.statusColor"></p-tag>
+            <td style="text-align: center;">
+                <p-tag [value]="task.status" [styleClass]="getSeverityStatus(task.status)" />
             </td>
-            <td>
-                <p-tag [value]="task.priority" [severity]="task.priorityColor"></p-tag>
+            <td style="text-align: center;">
+                <p-tag [value]="task.priority" [severity]="getSeverityPriority(task.priority)" />
             </td>
-            <td>
-                <p-tag [value]="task.type" [severity]="task.typeColor"></p-tag>
+            <td style="text-align: center;">
+                <p-tag [value]="task.type" [severity]="getSeverityType(task.type)" />
             </td>
-            <td>{{ task.date }}</td>
-            <td>{{ task.estimatedSP }}</td>
-            <td>{{ task.actualSP }}</td>
-            <td></td>
+            <td style="text-align: center;">{{ task.date | date : "d MMMM, yyyy" }}</td>
+            <td style="text-align: center;">{{ task.estimatedSP }} SP</td>
+            <td style="text-align: center;">{{ task.actualSP }} SP</td>
+            <td style="text-align: center;"></td>
         </tr>
     </ng-template>
     <ng-template pTemplate="footer">
         <tr>
-            <td colspan="7" style="text-align:right">sum</td>
-            <td>{{ getEstimatedSPSum() }} SP</td>
-            <td>{{ getActualSPSum() }} SP</td>
-            <td></td>
+            <td><p-checkbox></p-checkbox></td>
+            <td colspan="11">
+                <button pButton type="button" label="+ Add task" class="p-button-text custom-white-button"
+                    (click)="onAddTaskRow()"></button>
+            </td>
         </tr>
         <tr>
-            <td colspan="10">
-                <button pButton type="button" label="+ Add task" class="p-button-text"></button>
-            </td>
+            <td colspan="8" style="text-align:right"></td>
+            <td style="text-align: center;">{{ getEstimatedSPSum() }} SP</td>
+            <td style="text-align: center;">{{ getActualSPSum() }} SP</td>
+            <td></td>
         </tr>
     </ng-template>
 </p-table>
